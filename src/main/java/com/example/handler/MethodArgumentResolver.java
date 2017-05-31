@@ -40,19 +40,38 @@ public class MethodArgumentResolver implements HandlerMethodArgumentResolver {
         Object arg = null;
         Class<?> parameterType = methodParameter.getParameterType();
         //数据转换
-        converterArgument(parameterType,arg,nativeWebRequest);
+        arg = converterArgument(parameterType,arg,nativeWebRequest);
         //参数校验
-
+        if (null != arg) {
+            validParams(arg);
+        }
         return arg;
     }
 
+    /**
+     * 数据转换
+     * @param parameterType
+     * @param arg
+     * @param webRequest
+     * @return
+     * @throws IOException
+     */
     private Object converterArgument(Class<?> parameterType,Object arg,NativeWebRequest webRequest) throws IOException {
         HttpServletRequest request = ((ServletWebRequest) webRequest).getRequest();
         ServletInputStream inputStream = request.getInputStream();
-        if (request.getMethod().equals(RequestMethod.POST)) {
+        String method = request.getMethod();
+        if (RequestMethod.POST.name().equals(method)) {
+            //Post提交方式
             String content = IOUtils.toString(inputStream,"UTF-8");
             arg = JSON.parseObject(content,parameterType);
+        } else if (RequestMethod.GET.name().equals(method)) {
+            //GET提交方式
+
         }
         return arg;
+    }
+
+    private void validParams(Object arg) {
+
     }
 }

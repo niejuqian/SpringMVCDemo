@@ -2,7 +2,6 @@ package com.example.controller;
 
 import com.example.annotation.ReturnTypeNotResolved;
 import com.example.constant.CodeConstant;
-import com.example.entity.AccountInfo;
 import com.example.entity.UserInfo;
 import com.example.handler.exception.AppException;
 import org.slf4j.Logger;
@@ -33,11 +32,17 @@ public class LoginController {
         return userInfo;
     }
 
-
+    /**
+     * <p>
+     *     请求参数直接封装成对象
+     * </p>
+     * @param userInfo
+     * @return
+     */
     @RequestMapping(value = "/getBaseInfo",method = RequestMethod.POST)
-    public String getBaseInfo(UserInfo userInfo, AccountInfo accountInfo){
+    public String getBaseInfo(UserInfo userInfo){
         logger.info("==========================获取信息");
-        logger.info("====参数信息userInfo：" + userInfo + "，account：" + accountInfo);
+        logger.info("====参数信息userInfo：" + userInfo);
         return "login";
     }
 
