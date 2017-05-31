@@ -1,1 +1,8 @@
-# SpringMVCDemo
+# SpringMVC
+> 描述
+本demo使用SpringMVC+Maven构建，使用JSON作为传输数据协议。<br/>
+主要集成了如下功能点：
+* 使用Maven构建打包，并进行第三方依赖jar管理
+* 自定义全局异常处理
+* 自定义全局数据响应封装
+* 自定义入参处理，将请求参数封装成对象
