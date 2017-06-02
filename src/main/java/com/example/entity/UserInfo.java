@@ -1,17 +1,25 @@
 package com.example.entity;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * Created by Administrator on 2017/5/31.
  */
 public class UserInfo implements Serializable{
+    private Long userId;
     private String userName;
-    private Integer age;
-    private BigDecimal balance;
-    private Date birthday;
+    private String userMobile;
+    private Date createTime;
+    private Date lastUpdateTime;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public String getUserName() {
         return userName;
@@ -21,37 +29,38 @@ public class UserInfo implements Serializable{
         this.userName = userName;
     }
 
-    public Integer getAge() {
-        return age;
+    public String getUserMobile() {
+        return userMobile;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
+    public void setUserMobile(String userMobile) {
+        this.userMobile = userMobile;
     }
 
-    public BigDecimal getBalance() {
-        return balance;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
-    public Date getBirthday() {
-        return birthday;
+    public Date getLastUpdateTime() {
+        return lastUpdateTime;
     }
 
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
+    public void setLastUpdateTime(Date lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
     }
 
     @Override
     public String toString() {
         return "UserInfo{" +
-                "userName='" + userName + '\'' +
-                ", age=" + age +
-                ", balance=" + balance +
-                ", birthday=" + birthday +
+                "userId=" + userId +
+                ", userName='" + userName + '\'' +
+                ", userMobile='" + userMobile + '\'' +
+                ", createTime=" + createTime +
+                ", lastUpdateTime=" + lastUpdateTime +
                 '}';
     }
 }

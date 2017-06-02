@@ -3,14 +3,22 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
     <!--启用spring的一些annotation -->
-    <context:annotation-config/>
+    <!--<context:annotation-config/>-->
     <!-- 自动扫描该包，使SpringMVC认为包下用了@controller注解的类是控制器 -->
-    <context:component-scan base-package="com.example.*"/>
+    <context:component-scan base-package="com.example.*">
+        <context:exclude-filter type="annotation" expression="com.example.annotation.SkipIt"/>
+    </context:component-scan>
 
     <!-- 拦截所有请求-->
     <mvc:interceptors>
@@ -68,4 +76,29 @@
         <property name="prefix" value="/WEB-INF/views/"/><!--设置JSP文件的目录位置-->
         <property name="suffix" value=".jsp"/>
     </bean>
+
+    <bean id="test" class="com.example.aop.Test" scope="prototype"
+          p:name="#{'jason'}">
+        <property name="money" value="#{T(java.lang.Math).random()}"/>
+        <property name="persons">
+            <list>
+                <value type="java.lang.String">dddd</value>
+                <value type="java.lang.String">wwww</value>
+                <value type="java.lang.String">wwww</value>
+                <value type="java.lang.String">aaaa</value>
+            </list>
+        </property>
+    </bean>
+    <!-- 自定义aop -->
+    <aop:config>
+        <!--<aop:pointcut id="login" expression="execution(* *.login(..))" />-->
+        <aop:pointcut id="login" expression="within(com.example.controller.*)" />
+        <aop:aspect id="dd" ref="test">
+            <aop:before method="beforeSay" pointcut-ref="login"/>
+            <aop:after method="afterSay" pointcut-ref="login"/>
+        </aop:aspect>
+    </aop:config>
+    <!--自动代理 -->
+    <aop:aspectj-autoproxy />
+    <bean class="com.example.aop.LogExecuteTime" id="logExecuteTime"/>
 </beans>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--加载配置文件，以便下面数据连接池配置读取 -->
+    <context:property-placeholder location="classpath:properties/jdbc.properties"/>
+    <!--dbcp连接池配置 -->
+    <bean id="dataSource"
+          class="org.apache.commons.dbcp2.BasicDataSource">
+        <!--基本信息配置 -->
+        <!-- 数据库连接驱动-->
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <!--数据库连接地址 -->
+        <property name="url" value="${jdbc.url}"/>
+        <!--用户名 -->
+        <property name="username" value="${jdbc.username}"/>
+        <!-- 密码-->
+        <property name="password" value="${jdbc.pwd}"/>
+
+        <!--连接池配置 -->
+        <!--初始化大小 -->
+        <!--<property name="initialSize" value="${jdbc.initialSize}"/>
+        &lt;!&ndash;最小空闲连接 &ndash;&gt;
+        <property name="minIdle" value="${jdbc.minIdle}"/>
+        &lt;!&ndash;最大空闲连接 &ndash;&gt;
+        <property name="maxIdle" value="${jdbc.maxIdle}"/>
+        &lt;!&ndash;等待时间（单位：毫秒） &ndash;&gt;
+        <property name="maxWaitMillis" value="${jdbc.maxWaitMillis}" />
+        &lt;!&ndash;最大连接数 &ndash;&gt;
+        <property name="maxTotal" value="${jdbc.maxTotal}" />
+        &lt;!&ndash;是否自动回收超时连接 &ndash;&gt;
+        <property name="removeAbandonedOnBorrow" value="${jdbc.removeAbandonedOnBorrow}"/>
+        &lt;!&ndash;连接数据库超时时间 &ndash;&gt;
+        <property name="removeAbandonedTimeout" value="${jdbc.removeAbandonedTimeout}"/>-->
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="dataSource"/>
+    </bean>
+
+    <bean class="com.example.dao.impl.UserInfoDaoImpl" id="userInfoDao">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+</beans>
