@@ -6,10 +6,12 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -21,18 +23,18 @@ import java.util.Map;
  */
 public class BaseDao<E> extends SqlSessionDaoSupport{
     protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    /**
+     * spring redis 模板
+     */
+    @Resource
+    protected RedisTemplate<Serializable,Serializable> redisTemplate;
+
     /**
      * spring jdbc 模板
      */
-    private JdbcTemplate jdbcTemplate;
     @Resource
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate){
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public JdbcTemplate getJdbcTemplate() {
-        return jdbcTemplate;
-    }
+    protected JdbcTemplate jdbcTemplate;
 
     /**
      * Mybatis

@@ -3,9 +3,11 @@ package com.example.dao.impl;
 import com.example.dao.BaseDao;
 import com.example.dao.UserInfoDao;
 import com.example.entity.UserInfo;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -18,8 +20,8 @@ public class UserInfoDaoImpl extends BaseDao<UserInfo> implements UserInfoDao {
     @Override
     public UserInfo getUserInfo(String mobile) {
         logger.info("=================查询用户信息");
-        String sql = "select * from `user` t where t.user_mobile = ?";
-        return getJdbcTemplate().queryForObject(sql, new RowMapper<UserInfo>() {
+        String sql = "select * from `user_info` t where t.user_mobile = ?";
+        return jdbcTemplate.queryForObject(sql, new RowMapper<UserInfo>() {
             @Override
             public UserInfo mapRow(ResultSet rs, int i) throws SQLException {
                 UserInfo userInfo = new UserInfo();
@@ -35,6 +37,15 @@ public class UserInfoDaoImpl extends BaseDao<UserInfo> implements UserInfoDao {
 
     @Override
     public UserInfo getUserInfoByMybatis(String mobile) throws Exception {
+        ValueOperations<Serializable,Serializable> opsForValue = redisTemplate.opsForValue();
+        UserInfo userInfo = (UserInfo) opsForValue.get(mobile);
+        logger.info("===========redis中的数据：" + userInfo);
+        if (null == userInfo) {
+            userInfo = (UserInfo) super.selectOne("getUserInfoByMybatis",mobile);
+            if (null != userInfo) {
+                opsForValue.set(mobile,userInfo);
+            }
+        }
         return (UserInfo) super.selectOne("getUserInfoByMybatis",mobile);
     }
 }

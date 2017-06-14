@@ -22,6 +22,10 @@ public class AppExecptionHandlerResolver implements HandlerExceptionResolver{
     @Override
     public ModelAndView resolveException(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) {
         logger.info("=============================resolveException");
+        if (null != e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
         ResultBody responseBody = new ResultBody();
         if (null != e && e instanceof AppException) {
             responseBody.setCode(((AppException)e).getCode());

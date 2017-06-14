@@ -13,7 +13,7 @@
        http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop.xsd">
     <!--1.加载配置文件，以便下面数据连接池配置读取 -->
-    <context:property-placeholder location="classpath:properties/jdbc.properties"/>
+    <context:property-placeholder ignore-unresolvable="true" location="classpath:properties/jdbc.properties,classpath:properties/redis.properties"/>
     <!--2.配置dbcp连接池 -->
     <bean id="dataSource"
           class="org.apache.commons.dbcp2.BasicDataSource">
