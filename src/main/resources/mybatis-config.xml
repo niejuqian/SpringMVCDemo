@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <settings>
+        <!--全局映射器启用缓存 -->
+        <setting name="cacheEnabled" value="true"/>
+        <!--查询时，关闭关联对象及时加载以提高性能 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!--使用jdbc的getGeneratedKeys获取数据库自增主键 -->
+        <setting name="useGeneratedKeys" value="true"/>
+        <!--使用别名替换列明，默认true -->
+        <setting name="useColumnLabel" value="true"/>
+        <!--开启驼峰命名转换 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!--设置关联对象加载的形态，此处为按需加载字段（加载字段由sql指定）不会加载关联表所有字段，提高性能 -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+    </settings>
+</configuration>

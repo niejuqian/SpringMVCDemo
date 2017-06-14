@@ -45,8 +45,10 @@ public class LoginController {
         System.out.println("=========================登录111");
         payService.pay();
         logger.info("=============userInfoService=" + userInfoService);
-        UserInfo userInfo = userInfoService.getUserInfo("15899773751");
+        UserInfo userInfo = userInfoService.getUserInfo("15899773751",1);
         logger.info("=================用户信息：" + userInfo);
+        UserInfo userInfo1 = userInfoService.getUserInfo("15899773751",0);
+        logger.info("=================用户信息1：" + userInfo1);
         return userInfo;
     }
 

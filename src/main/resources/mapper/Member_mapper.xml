@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.entity.UserInfo">
+    <resultMap id="userInfoMap" type="com.example.entity.UserInfo">
+        <result column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+        <result column="user_mobile" property="userMobile"/>
+        <result column="create_time" property="createTime"/>
+        <result column="last_update_time" property="lastUpdateTime"/>
+    </resultMap>
+    <select id="getUserInfoByMybatis" resultMap="userInfoMap" parameterType="java.lang.String">
+        select * from `user` t where t.user_mobile =#{mobile}
+    </select>
+</mapper>

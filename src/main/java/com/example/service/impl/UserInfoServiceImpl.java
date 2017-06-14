@@ -14,7 +14,11 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Autowired
     UserInfoDao userInfoDao;
     @Override
-    public UserInfo getUserInfo(String mobile) throws Exception {
-        return userInfoDao.getUserInfo(mobile);
+    public UserInfo getUserInfo(String mobile,int type) throws Exception {
+        if (type == 1) {
+            return userInfoDao.getUserInfo(mobile);
+        } else {
+            return userInfoDao.getUserInfoByMybatis(mobile);
+        }
     }
 }

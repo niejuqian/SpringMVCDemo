@@ -7,4 +7,6 @@ import com.example.entity.UserInfo;
  */
 public interface UserInfoDao {
     UserInfo getUserInfo(String mobile);
+
+    UserInfo getUserInfoByMybatis(String mobile) throws Exception;
 }

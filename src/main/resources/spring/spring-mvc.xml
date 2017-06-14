@@ -101,4 +101,12 @@
     <!--自动代理 -->
     <aop:aspectj-autoproxy />
     <bean class="com.example.aop.LogExecuteTime" id="logExecuteTime"/>
+
+
+    <!-- 配置文件上传 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1024000000"/>
+        <property name="resolveLazily" value="true"/>
+        <property name="maxInMemorySize" value="4096"/>
+    </bean>
 </beans>

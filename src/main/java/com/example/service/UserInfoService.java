@@ -13,5 +13,5 @@ public interface UserInfoService {
      * @return
      * @throws Exception
      */
-    UserInfo getUserInfo(String mobile) throws Exception;
+    UserInfo getUserInfo(String mobile,int type) throws Exception;
 }

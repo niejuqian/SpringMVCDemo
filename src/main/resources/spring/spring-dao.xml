@@ -2,13 +2,19 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
-       http://www.springframework.org/schema/context/spring-context.xsd">
-    <!--加载配置文件，以便下面数据连接池配置读取 -->
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--1.加载配置文件，以便下面数据连接池配置读取 -->
     <context:property-placeholder location="classpath:properties/jdbc.properties"/>
-    <!--dbcp连接池配置 -->
+    <!--2.配置dbcp连接池 -->
     <bean id="dataSource"
           class="org.apache.commons.dbcp2.BasicDataSource">
         <!--基本信息配置 -->
@@ -38,11 +44,44 @@
         <property name="removeAbandonedTimeout" value="${jdbc.removeAbandonedTimeout}"/>-->
     </bean>
 
+    <!-- 3.1 spring jdbcTemplate配置 -->
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <constructor-arg ref="dataSource"/>
     </bean>
 
-    <bean class="com.example.dao.impl.UserInfoDaoImpl" id="userInfoDao">
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    <!--3.2spring 整合mybatis -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!--自动扫描xml文件 -->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+        <!--MyBatis全局配置文件 -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!--扫描dto包，使用别名 -->
+        <property name="typeAliasesPackage" value="com.example.entity"/>
     </bean>
+
+    <!--4.配置事物管理 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--基于注解管理 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <!-- -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="add*" read-only="false"/>
+            <tx:method name="update*" read-only="false"/>
+            <tx:method name="insert*" read-only="false"/>
+            <tx:method name="create*" read-only="false"/>
+            <tx:method name="delete*" read-only="false"/>
+            <tx:method name="find*" read-only="true"/>
+            <tx:method name="select*" read-only="true"/>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+        </tx:attributes>
+    </tx:advice>
+    <!--设置事物管理切面 -->
+    <aop:config>
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* com.example.service..*.*(..))"/>
+    </aop:config>
 </beans>

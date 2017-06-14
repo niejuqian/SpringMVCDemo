@@ -13,7 +13,7 @@ import java.sql.SQLException;
  * Created by Administrator on 2017/6/2.
  */
 @Repository
-public class UserInfoDaoImpl extends BaseDao implements UserInfoDao {
+public class UserInfoDaoImpl extends BaseDao<UserInfo> implements UserInfoDao {
 
     @Override
     public UserInfo getUserInfo(String mobile) {
@@ -31,5 +31,10 @@ public class UserInfoDaoImpl extends BaseDao implements UserInfoDao {
                 return userInfo;
             }
         },mobile);
+    }
+
+    @Override
+    public UserInfo getUserInfoByMybatis(String mobile) throws Exception {
+        return (UserInfo) super.selectOne("getUserInfoByMybatis",mobile);
     }
 }
