@@ -4,7 +4,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd">
     <!--1.引入redis.properties配置文件 -->
-    <!-- 在spring-mvc.xml文件中统一引用-->
+    <!--注：整个spring所有配置文件中，只能引用一个context:property-placeholder，所以，如果其他配置文件还需要引入的话，可以在location中引入多个，以逗号分隔 -->
+    <!--<context:property-placeholder location="classpath:properties/redis.properties"/>-->
     <!--2.配置redis数据源 -->
     <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <!-- 最大连接数 -->
