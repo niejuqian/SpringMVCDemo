@@ -1,12 +1,18 @@
 package com.example.dao;
 
 import com.example.entity.PageModel;
+import com.example.utils.JsonHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
 
@@ -21,14 +27,73 @@ import java.util.Map;
 /**
  * Created by nie_jq on 2017/6/2.
  */
-public class BaseDao<E> extends SqlSessionDaoSupport{
+public class BaseDao<T> extends SqlSessionDaoSupport{
     protected Logger logger = LoggerFactory.getLogger(getClass());
+
+
+    private Class<T> entityClass;
+    public BaseDao(){
+        Type type = getClass().getGenericSuperclass();
+        Type trueType = ((ParameterizedType) type).getActualTypeArguments()[0];
+        this.entityClass = (Class<T>) trueType;
+    }
 
     /**
      * spring redis 模板
      */
     @Resource
     protected RedisTemplate<Serializable,Serializable> redisTemplate;
+
+    protected RedisSerializer<String> getRedisSerializer() {
+        return redisTemplate.getStringSerializer();
+    }
+
+    /**
+     * 获取redis中的值
+     * @param cacheKey
+     * @param t
+     * @param <T>
+     * @return
+     */
+    protected <T> T redisGet(String cacheKey,Class<T> t) {
+        T result = redisTemplate.execute(new RedisCallback<T>() {
+            @Override
+            public T doInRedis(RedisConnection connection) throws DataAccessException {
+                RedisSerializer<String> serializer = getRedisSerializer();
+                byte[] key = serializer.serialize(cacheKey);
+                byte[] value = connection.get(key);
+                if (null != value) {
+                    String userInfoStr = serializer.deserialize(value);
+                    if (StringUtils.isNotEmpty(userInfoStr)) {
+                        return JsonHelper.fromJson(userInfoStr,t);
+
+                    }
+                }
+                return null;
+            }
+        });
+        return result;
+    }
+
+    /**
+     * 将数据传入redis中
+     * @param cacheKey
+     * @param cacheValue
+     * @param expireTime
+     * @return
+     */
+    protected boolean redisPut(String cacheKey, String cacheValue, long expireTime) {
+        return redisTemplate.execute(new RedisCallback<Boolean>() {
+            @Override
+            public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+                RedisSerializer<String> serializer = getRedisSerializer();
+                byte[] key = serializer.serialize(cacheKey);
+                byte[] value = serializer.serialize(cacheValue);
+                connection.setRange(key,value,expireTime);
+                return true;
+            }
+        });
+    }
 
     /**
      * spring jdbc 模板
@@ -48,13 +113,6 @@ public class BaseDao<E> extends SqlSessionDaoSupport{
 
     public static final String MAPPER_INSERT = "insert";
     public static final String MAPPER_DELETE = "delete";
-
-    private Class<E> entityClass;
-    public BaseDao(){
-        Type type = getClass().getGenericSuperclass();
-        Type trueType = ((ParameterizedType) type).getActualTypeArguments()[0];
-        this.entityClass = (Class<E>) trueType;
-    }
     /**
      *
      * 功能描述：查询list
@@ -68,10 +126,10 @@ public class BaseDao<E> extends SqlSessionDaoSupport{
      *
      * <p>修改历史 ：(修改人，修改时间，修改原因/内容)</p>
      */
-    public List<E> findList(String statement, Object parameter) {
+    public List<T> findList(String statement, Object parameter) {
         Assert.notNull(statement, "Property statement is required");
 
-        return (List<E>)this.getSqlSession().selectList(statement, parameter);
+        return (List<T>)this.getSqlSession().selectList(statement, parameter);
     }
 
     /**
@@ -86,9 +144,9 @@ public class BaseDao<E> extends SqlSessionDaoSupport{
      *
      * <p>修改历史 ：(修改人，修改时间，修改原因/内容)</p>
      */
-    public List<E> findList(String statement) {
+    public List<T> findList(String statement) {
         Assert.notNull(statement, "Property statement is required");
-        return (List<E>)this.getSqlSession().selectList(statement);
+        return (List<T>)this.getSqlSession().selectList(statement);
     }
 
     /**
@@ -290,11 +348,11 @@ public class BaseDao<E> extends SqlSessionDaoSupport{
                 }
             }
         }
-        List<E> list = null;
+        List<T> list = null;
         Map<String,Object> pageParam=new HashMap<String,Object>();
         pageParam.put("start", parameter.getPageSize()*(parameter.getToPage()-1));
         pageParam.put("limit", parameter.getPageSize());
-        list = (List<E>)this.getSqlSession().selectList(statement, pageParam);
+        list = (List<T>)this.getSqlSession().selectList(statement, pageParam);
         parameter.setList(list);
         return parameter;
     }
@@ -321,8 +379,8 @@ public class BaseDao<E> extends SqlSessionDaoSupport{
         }else{
             return new PageModel();
         }
-        List<E> list = null;
-        list = (List<E>)this.getSqlSession().selectList(statement, params);
+        List<T> list = null;
+        list = (List<T>)this.getSqlSession().selectList(statement, params);
         pageModel.setList(list);
         return pageModel;
     }
